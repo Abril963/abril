@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calculadora Web</title>
+  <style>
+    body { background:#f5f5f5; color:#222; font-family:Arial, sans-serif; display:flex; justify-content:center; align-items:center; min-height:100vh; margin:0; }
+    .calc { width:360px; background:#fff; border-radius:18px; box-shadow:0 16px 40px rgba(0,0,0,.12); padding:20px; }
+    .display { width:100%; height:70px; border:1px solid #ddd; border-radius:14px; margin-bottom:16px; font-size:2rem; text-align:right; padding:12px; box-sizing:border-box; }
+    .grid { display:grid; gap:10px; grid-template-columns:repeat(4,1fr); }
+    button { font-size:1.2rem; padding:18px; border:none; border-radius:12px; background:#f0f0f0; cursor:pointer; transition:background .2s; }
+    button.operator { background:#ff9f1c; color:#fff; }
+    button.equals { background:#2ec4b6; color:#fff; }
+    button.clear { background:#ff595e; color:#fff; }
+    button:hover { filter:brightness(.95); }
+  </style>
+</head>
+<body>
+  <div class="calc">
+    <input id="display" class="display" type="text" value="0" />
+    <div class="grid">
+      <button class="clear" data-value="C">C</button>
+      <button data-value="(">(</button>
+      <button data-value=")">)</button>
+      <button class="operator" data-value="%">%</button>
+      <button data-value="7">7</button>
+      <button data-value="8">8</button>
+      <button data-value="9">9</button>
+      <button class="operator" data-value="/">÷</button>
+      <button data-value="4">4</button>
+      <button data-value="5">5</button>
+      <button data-value="6">6</button>
+      <button class="operator" data-value="*">×</button>
+      <button data-value="1">1</button>
+      <button data-value="2">2</button>
+      <button data-value="3">3</button>
+      <button class="operator" data-value="-">−</button>
+      <button data-value="0">0</button>
+      <button data-value=".">.</button>
+      <button data-value="**">**</button>
+      <button class="operator" data-value="+">+</button>
+      <button data-value="pi">π</button>
+      <button data-value="sin(">sin</button>
+      <button data-value="cos(">cos</button>
+      <button data-value="tan(">tan</button>
+      <button data-value="sqrt(">sqrt</button>
+      <button data-value="root(">root</button>
+      <button data-value="comb(">comb</button>
+      <button data-value="bin(">bin</button>
+      <button data-value="hex(">hex</button>
+      <button data-value="oct(">oct</button>
+      <button data-value="log(">log</button>
+      <button class="equals" data-value="=">=</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById('display');
+    const buttons = document.querySelectorAll('button[data-value]');
+
+    function factorial(n) {
+      n = Math.trunc(n);
+      if (n < 0) return NaN;
+      return n <= 1 ? 1 : n * factorial(n - 1);
+    }
+
+    function comb(n, k) {
+      n = Math.trunc(n);
+      k = Math.trunc(k);
+      if (k < 0 || k > n) return NaN;
+      return factorial(n) / (factorial(k) * factorial(n - k));
+    }
+
+    function root(x, n) {
+      return Math.pow(x, 1 / n);
+    }
+
+    function bin(value) {
+      return Math.trunc(value).toString(2);
+    }
+
+    function hex(value) {
+      return Math.trunc(value).toString(16);
+    }
+
+    function oct(value) {
+      return Math.trunc(value).toString(8);
+    }
+
+    function parseExpr(expr) {
+      expr = expr.replace(/÷/g, '/').replace(/×/g, '*').replace(/\^/g, '**');
+      expr = expr.replace(/\bpi\b/g, String(Math.PI));
+      expr = expr.replace(/(\d+(?:\.\d+)?)%/g, '($1/100)');
+      return expr;
+    }
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const value = btn.dataset.value;
+        if (value === 'C') {
+          display.value = '0';
+          return;
+        }
+        if (value === '=') {
+          calcular();
+          return;
+        }
+        if (display.value === '0') display.value = value;
+        else display.value += value;
+      });
+    });
+
+    function calcular() {
+      let expr = parseExpr(display.value);
+      if (!/^[0-9A-Za-z.+\-*/()% ,]+$/.test(expr)) {
+        alert('Expresión inválida');
+        return;
+      }
+      try {
+        const resultado = eval(expr);
+        display.value = resultado;
+      } catch {
+        alert('Expresión inválida');
+      }
+    }
+  </script>
+</body>
+</html>
